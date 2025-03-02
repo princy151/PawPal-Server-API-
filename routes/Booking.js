@@ -10,6 +10,7 @@ router.get("/:id", bookingController.getBookingById);
 router.patch("/update/:id", bookingController.updateBookingStatus);
 router.delete("/:id", bookingController.deleteBooking);
 router.put("/:id/dates", bookingController.updateBookingDates);
+router.put("dates/:id", bookingController.updateBookingDates);
 
 
 module.exports = router;
