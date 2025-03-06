@@ -13,7 +13,8 @@ const {
   addPet,
   updatePet,
   deletePet,
-  toggleOpenBooking
+  toggleOpenBooking,
+  updateOwner
 } = require("../controller/PetOwnerController");
 
 router.post("/uploadImage", upload, uploadImage);
@@ -25,9 +26,7 @@ router.patch("/:id/addPet", addPet);
 router.patch("/:id/updatePet/:petId", updatePet);
 router.delete("/:id/pets/:petId",deletePet);
 router.patch("/:id/pets/:petId/toggleOpenBooking", toggleOpenBooking);
-
-
-
+router.put("/update/:id", updateOwner);
 
 
 module.exports = router;

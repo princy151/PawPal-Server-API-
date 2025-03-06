@@ -39,6 +39,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 
   // Check if petwoner exists
   const petowner = await PetOwner.findOne({ email }).select("+password");
+  console.log(petowner)
 
   if (!petowner || !(await petowner.matchPassword(password))) {
     return res.status(401).json({ message: "Invalid credentials" });
@@ -90,7 +91,8 @@ const sendTokenResponse = (PetOwner, statusCode, res) => {
     .json({
       success: true,
       token,
-      userId: PetOwner._id,  // Add the user ID here
+      userId: PetOwner,
+      ownerid: PetOwner._id // Add the user ID here
     });
 };
 
@@ -243,5 +245,43 @@ exports.toggleOpenBooking = asyncHandler(async (req, res, next) => {
     success: true,
     message: `Pet's openBooking status updated to ${pet.openbooking}`,
     data: pet,
+  });
+});
+
+exports.updateOwner = asyncHandler(async (req, res, next) => {
+  console.log(req.body);
+  const { name, email, phone, address, image } = req.body;
+
+  // Get owner ID from URL parameters
+  const ownerId = req.params.id;
+  console.log('OwnerID')
+  console.log(ownerId)
+
+
+  // Find the owner by ID
+  const owner = await PetOwner.findById(ownerId);
+
+  if (!owner) {
+    return res.status(404).json({ message: "Owner not found" });
+  }
+
+  // Update owner's profile data with values from the request body (if provided)
+  owner.name = name || owner.name;
+  owner.email = email || owner.email;
+  owner.phone = phone || owner.phone;
+  owner.address = address || owner.address;
+
+  // Handle image upload (optional, if provided)
+  if (image) {
+    owner.image = image; // Save the image filename or URL in the database
+  }
+
+  // Save updated owner profile
+  await owner.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Profile updated successfully",
+    data: owner,
   });
 });

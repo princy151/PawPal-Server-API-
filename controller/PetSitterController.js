@@ -94,7 +94,8 @@ const sendTokenResponse = (PetSitter, statusCode, res) => {
     .json({
       success: true,
       token,
-      sitterId: PetSitter._id, 
+      sitterId: PetSitter._id,
+      sitter:PetSitter 
     });
 };
 
@@ -134,4 +135,37 @@ exports.getSitter = async (req, res, next) => {
   }
 };
 
+exports.updateSitter = asyncHandler(async (req, res, next) => {
+  console.log(req.body);
+  const { name, email, phone, address, image } = req.body;
 
+  // Get sitter ID from URL parameters
+  const sitterId = req.params.id;
+
+  // Find the sitter by ID
+  const sitter = await PetSitter.findById(sitterId);
+
+  if (!sitter) {
+    return res.status(404).json({ message: "Sitter not found" });
+  }
+
+  // Update sitter's profile data with values from the request body (if provided)
+  sitter.name = name || sitter.name;
+  sitter.email = email || sitter.email;
+  sitter.phone = phone || sitter.phone;
+  sitter.address = address || sitter.address;
+
+  // Handle image upload (optional, if provided)
+  if (image) {
+    sitter.image = image; // Save the image filename or URL in the database
+  }
+
+  // Save updated sitter profile
+  await sitter.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Profile updated successfully",
+    data: sitter,
+  });
+});
